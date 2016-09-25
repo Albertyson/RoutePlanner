@@ -403,6 +403,7 @@ public class main extends javax.swing.JFrame {
             }
         }
         rutas = new ArrayList();
+        txtRutas.setText("");
         for (int i = 0; i < camiones; i++) {
             ArrayList<Tienda> ruta = new ArrayList();
             double total = 0;
@@ -421,12 +422,14 @@ public class main extends javax.swing.JFrame {
                     total+=tiendaActual.distanciaLocal;
                 }
             }
-            //volver al origen            
-            txtRutas.append("\n\ttienda(indice):" + origen.nombre +
-                    ",\tdistancia con el origen: \t" + 0 + 
-                    ",\tdistancia con el anterior: \t" + ruta.get(ruta.size()-1).distancia + ". ");
-            total+=ruta.get(ruta.size()-1).distancia;
-            ruta.add(origen);
+            if(ruta.size()>0){
+                //volver al origen            
+                txtRutas.append("\n\ttienda(indice):" + origen.nombre +
+                        ",\tdistancia con el origen: \t" + 0 + 
+                        ",\tdistancia con el anterior: \t" + ruta.get(ruta.size()-1).distancia + ". ");
+                total+=ruta.get(ruta.size()-1).distancia;
+                ruta.add(origen);
+            }            
             txtRutas.append("\ndistancia total: "+total+"\n");
             rutas.add(ruta);
         }
