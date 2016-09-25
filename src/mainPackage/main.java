@@ -75,6 +75,7 @@ public class main extends javax.swing.JFrame {
         btnSalida = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Route Planner");
 
         btnLeer.setText("Leer entrada");
         btnLeer.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -430,9 +431,13 @@ public class main extends javax.swing.JFrame {
         }
     }
     public Double getDistancia(Coordenada c1,Coordenada c2){
-        return Math.sqrt(Math.pow(c1.x-c2.x,2)+Math.pow(c1.y-c2.y,2));
+        double retVal = Math.sqrt(Math.pow(c1.x-c2.x,2)+Math.pow(c1.y-c2.y,2));
+        retVal = Math.round(retVal);
+        return retVal;
     }
     public void calcularRutas(){
+        long start = System.nanoTime();
+        double acumDistancias = 0;
         ArrayList<String> calculadas = new ArrayList();
         //ordenar las tiendas por distancia con respecto al origen
         ArrayList<Tienda> distancias = new ArrayList();
@@ -456,6 +461,7 @@ public class main extends javax.swing.JFrame {
 //        }
         rutas = new ArrayList();
         txtRutas.setText("");
+        ArrayList<Double> distanciasPorRuta = new ArrayList();
         for (int i = 0; i < camiones; i++) {
             ArrayList<Tienda> ruta = new ArrayList();
             double total = 0;
@@ -481,11 +487,39 @@ public class main extends javax.swing.JFrame {
                         ",\tdistancia con el anterior: \t" + ruta.get(ruta.size()-1).distancia + ". ");
                 total+=ruta.get(ruta.size()-1).distancia;
                 ruta.add(origen);
-            }            
+            }
+            acumDistancias+=total;
+            distanciasPorRuta.add(total);
             txtRutas.append("\ndistancia total: "+total+"\n");
             rutas.add(ruta);
         }
-        
+        long end = System.nanoTime();
+        long totalTime = (end-start)/1000;
+        double distanciaPromedio = acumDistancias/rutas.size();
+        txtRutas.append("Tiempo de ejecucion microsegundos: "+totalTime+"\n");
+        txtRutas.append("Promedio de distancias por ruta: "+distanciaPromedio+"\n");
+        double distanciaMenor = getMin(distanciasPorRuta);
+        double distanciaMayor = getMax(distanciasPorRuta);
+        txtRutas.append("Menor distancia de ruta: "+distanciaMenor+"\n");
+        txtRutas.append("Mayor distancia de ruta: "+distanciaMayor+"\n");
+    }
+    public double getMin(ArrayList<Double> list){
+        Double min = list.get(0);
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i)<=min){
+                min = list.get(i);
+            }
+        }
+        return min;
+    }
+    public double getMax(ArrayList<Double> list){
+        Double max = list.get(0);
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i)>=max){
+                max = list.get(i);
+            }
+        }
+        return max;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCalcular;
