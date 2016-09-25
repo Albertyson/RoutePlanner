@@ -21,8 +21,13 @@ import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -103,11 +108,14 @@ public class main extends javax.swing.JFrame {
 
         txtEntrada.setColumns(20);
         txtEntrada.setRows(5);
+        txtEntrada.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         txtEntrada.setEnabled(false);
         jScrollPane1.setViewportView(txtEntrada);
 
         txtRutas.setColumns(20);
         txtRutas.setRows(5);
+        txtRutas.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        txtRutas.setDragEnabled(true);
         txtRutas.setEnabled(false);
         jScrollPane2.setViewportView(txtRutas);
 
@@ -121,6 +129,11 @@ public class main extends javax.swing.JFrame {
 
         btnSalida.setText("Generar Archivo de Salida");
         btnSalida.setEnabled(false);
+        btnSalida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalidaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -273,6 +286,34 @@ public class main extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_btnMostrarRutaActionPerformed
+
+    private void btnSalidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalidaActionPerformed
+        // TODO add your handling code here:
+        try {
+            String contenido = "";
+            File file = new File("./salida.txt");
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                    file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (int i = 0; i < rutas.size(); i++) {
+                ArrayList<Tienda> ruta = rutas.get(i);
+                contenido += ruta.size() + "\n";
+                for (int j = 0; j < ruta.size(); j++) {
+                    Tienda actual = ruta.get(j);
+                    contenido += actual.nombre + "\n";
+                }
+            }
+            bw.write(contenido);
+            bw.close();
+            JOptionPane.showMessageDialog(this, "El archivo fue generado exitosamente", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar generar el archivo de salida", "Aviso", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnSalidaActionPerformed
 
     /**
      * @param args the command line arguments
