@@ -67,6 +67,7 @@ public class main extends javax.swing.JFrame {
         txtRutas = new javax.swing.JTextArea();
         txtCamion = new javax.swing.JTextField();
         btnMostrarRuta = new javax.swing.JButton();
+        btnSalida = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,8 +111,6 @@ public class main extends javax.swing.JFrame {
         txtRutas.setEnabled(false);
         jScrollPane2.setViewportView(txtRutas);
 
-        txtCamion.setEnabled(false);
-
         btnMostrarRuta.setText("Mostrar Ruta");
         btnMostrarRuta.setEnabled(false);
         btnMostrarRuta.addActionListener(new java.awt.event.ActionListener() {
@@ -119,6 +118,9 @@ public class main extends javax.swing.JFrame {
                 btnMostrarRutaActionPerformed(evt);
             }
         });
+
+        btnSalida.setText("Generar Archivo de Salida");
+        btnSalida.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -144,7 +146,9 @@ public class main extends javax.swing.JFrame {
                                 .addComponent(txtCamion, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnMostrarRuta)
-                                .addGap(0, 156, Short.MAX_VALUE)))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnSalida)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -159,7 +163,8 @@ public class main extends javax.swing.JFrame {
                     .addComponent(btnCalcular)
                     .addComponent(btnTiendas)
                     .addComponent(txtCamion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnMostrarRuta))
+                    .addComponent(btnMostrarRuta)
+                    .addComponent(btnSalida))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
@@ -227,6 +232,7 @@ public class main extends javax.swing.JFrame {
                 txtCamion.setEnabled(false);
                 btnMostrarRuta.setEnabled(false);
                 btnTiendas.setEnabled(false);
+                btnSalida.setEnabled(false);
             } else {
                 txtFileName.setText("");
                 btnCalcular.setEnabled(true);
@@ -242,6 +248,7 @@ public class main extends javax.swing.JFrame {
         txtCamion.setEnabled(true);
         btnMostrarRuta.setEnabled(true);
         btnTiendas.setEnabled(true);
+        btnSalida.setEnabled(true);
     }//GEN-LAST:event_btnCalcularActionPerformed
 
     private void btnTiendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTiendasActionPerformed
@@ -259,10 +266,10 @@ public class main extends javax.swing.JFrame {
             if(numeroRuta>=0 && numeroRuta<camiones){
                 showGraph(numeroRuta);
             }else{
-                JOptionPane.showMessageDialog(this, "Ingrese una ruta correcta", "Aviso", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Ingrese un numero correcto de ruta", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "Ingrese una ruta correcta", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingrese un numero correcto de ruta", "Aviso", JOptionPane.WARNING_MESSAGE);
         }
         
     }//GEN-LAST:event_btnMostrarRutaActionPerformed
@@ -338,6 +345,7 @@ public class main extends javax.swing.JFrame {
         jp.add(vv);
         JScrollPane jsp = new JScrollPane(jp);
         frame.getContentPane().add(jsp);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.pack();
         frame.setVisible(true);
     }
@@ -402,6 +410,9 @@ public class main extends javax.swing.JFrame {
                 }
             }
         }
+//        for (int i = 0; i < distancias.size(); i++) {
+//            System.out.println(distancias.get(i).nombre+" "+distancias.get(i).distancia);
+//        }
         rutas = new ArrayList();
         txtRutas.setText("");
         for (int i = 0; i < camiones; i++) {
@@ -439,6 +450,7 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JButton btnCalcular;
     private javax.swing.JButton btnLeer;
     private javax.swing.JButton btnMostrarRuta;
+    private javax.swing.JButton btnSalida;
     private javax.swing.JButton btnTiendas;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
