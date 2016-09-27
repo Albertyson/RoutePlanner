@@ -73,6 +73,7 @@ public class main extends javax.swing.JFrame {
         txtCamion = new javax.swing.JTextField();
         btnMostrarRuta = new javax.swing.JButton();
         btnSalida = new javax.swing.JButton();
+        btnCalcular2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Route Planner");
@@ -136,6 +137,14 @@ public class main extends javax.swing.JFrame {
             }
         });
 
+        btnCalcular2.setText("Calcular Rutas 2");
+        btnCalcular2.setEnabled(false);
+        btnCalcular2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCalcular2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -162,7 +171,10 @@ public class main extends javax.swing.JFrame {
                                 .addComponent(btnMostrarRuta)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnSalida)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnCalcular2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -179,10 +191,12 @@ public class main extends javax.swing.JFrame {
                     .addComponent(txtCamion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnMostrarRuta)
                     .addComponent(btnSalida))
-                .addGap(18, 18, 18)
+                .addGap(5, 5, 5)
+                .addComponent(btnCalcular2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -204,6 +218,7 @@ public class main extends javax.swing.JFrame {
                 currentFile = fc.getSelectedFile();
                 txtFileName.setText(currentFile.getPath());
                 btnCalcular.setEnabled(true);
+                btnCalcular2.setEnabled(true);
                 FileReader fr = new FileReader(currentFile);
                 BufferedReader br = new BufferedReader(fr);
                 txtEntrada.setText("");
@@ -249,7 +264,8 @@ public class main extends javax.swing.JFrame {
                 btnSalida.setEnabled(false);
             } else {
                 txtFileName.setText("");
-                btnCalcular.setEnabled(true);
+                btnCalcular.setEnabled(false);
+                btnCalcular2.setEnabled(false);
             }
         } catch (Exception e) {
 
@@ -315,6 +331,15 @@ public class main extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar generar el archivo de salida", "Aviso", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSalidaActionPerformed
+
+    private void btnCalcular2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcular2ActionPerformed
+        // TODO add your handling code here:
+        calcularRutas2();
+        txtCamion.setEnabled(true);
+        btnMostrarRuta.setEnabled(true);
+        btnTiendas.setEnabled(true);
+        btnSalida.setEnabled(true);
+    }//GEN-LAST:event_btnCalcular2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -435,12 +460,32 @@ public class main extends javax.swing.JFrame {
         retVal = Math.round(retVal);
         return retVal;
     }
+    public Tienda obtenerTiendaMasCercana(ArrayList<Tienda> distancias,Tienda tienda){
+        Tienda masCercana = distancias.get(0);
+        int idx=0;
+        if(tienda!=null){
+            //recalcular distancias
+            for (int i = 0; i < distancias.size(); i++) {
+                Tienda actual = distancias.get(i);
+                Double distancia = getDistancia(actual.posicion,tienda.posicion);
+                actual.distancia = distancia;
+                distancias.set(i,actual);
+            }
+        }
+        for (int i = 1; i < distancias.size(); i++) {
+            if(distancias.get(i).distancia<=masCercana.distancia){
+                masCercana =  distancias.get(i);
+                idx = i;
+            }
+        }
+        distancias.remove(idx);
+        return masCercana;
+    }
     public void calcularRutas(){
         long start = System.nanoTime();
         double acumDistancias = 0;
-        ArrayList<String> calculadas = new ArrayList();
-        //ordenar las tiendas por distancia con respecto al origen
         ArrayList<Tienda> distancias = new ArrayList();
+        //ordenar las tiendas por distancia con respecto al origen
         for (int i = 1; i < tiendas.size(); i++) {
             Tienda tiendaActual = tiendas.get(i);
             Double distancia = getDistancia(tiendaActual.posicion,origen.posicion);
@@ -503,6 +548,98 @@ public class main extends javax.swing.JFrame {
         txtRutas.append("Menor distancia de ruta: "+distanciaMenor+"\n");
         txtRutas.append("Mayor distancia de ruta: "+distanciaMayor+"\n");
     }
+    public void calcularRutas2(){
+        long start = System.nanoTime();
+        double acumDistancias = 0;        
+        ArrayList<Tienda> distancias = new ArrayList();
+        for (int i = 1; i < tiendas.size(); i++) {
+            Tienda tiendaActual = tiendas.get(i);
+            Double distancia = getDistancia(tiendaActual.posicion,origen.posicion);
+            tiendaActual.distancia = Math.round(distancia) + 0.0;
+            distancias.add(tiendaActual);
+        }
+        //ordenar las tiendas por distancia con respecto al origen
+        for (int i = distancias.size() - 1; i >= 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (distancias.get(j + 1).distancia < distancias.get(j).distancia) {
+                    Tienda temp = distancias.get(j + 1);
+                    distancias.set(j + 1, distancias.get(j));
+                    distancias.set(j,temp);
+                }
+            }
+        }
+//        for (int i = 0; i < distancias.size(); i++) {
+//            System.out.println(distancias.get(i).nombre+" "+distancias.get(i).distancia);
+//        }
+        rutas = new ArrayList();
+        txtRutas.setText("");
+        ArrayList<Double> distanciasPorRuta = new ArrayList();
+        //inicializar rutas
+        for (int i = 0; i < camiones; i++) {
+            if(!distancias.isEmpty()){
+                ArrayList<Tienda> ruta = new ArrayList();
+                Tienda tiendaMasCercana = obtenerTiendaMasCercana(distancias,null);
+                tiendaMasCercana.distanciaLocal = tiendaMasCercana.distancia;
+                if(ruta.size()>0){
+                    tiendaMasCercana.distanciaLocal = getDistancia(tiendaMasCercana.posicion,ruta.get(ruta.size()-1).posicion);//tiendaActual.distancia - ruta.get(ruta.size()-1).distancia;
+                }
+                ruta.add(tiendaMasCercana);
+                rutas.add(ruta);
+            }else{
+                break;
+            }         
+        }
+        //llenar rutas con distancias mas cercanas
+        while(!distancias.isEmpty()){
+            for (int i = 0; i < rutas.size(); i++) {
+                if(!distancias.isEmpty()){
+                    ArrayList<Tienda> ruta = rutas.get(i);
+                    Tienda ultimaTiendaVisitada = ruta.get(ruta.size()-1);
+                    Tienda tiendaMasCercana = obtenerTiendaMasCercana(distancias,ultimaTiendaVisitada);
+                    tiendaMasCercana.distanciaLocal = tiendaMasCercana.distancia;
+                    if(ruta.size()>0){
+                        tiendaMasCercana.distanciaLocal = getDistancia(tiendaMasCercana.posicion,ruta.get(ruta.size()-1).posicion);//tiendaActual.distancia - ruta.get(ruta.size()-1).distancia;
+                    }
+                    ruta.add(tiendaMasCercana);
+                }else{
+                    break;
+                }                
+            }
+        }
+        //regresar al origen
+        for (int i = 0; i < rutas.size(); i++) {
+            ArrayList<Tienda> ruta = rutas.get(i);
+            Tienda origenCopia = new Tienda("0",origen.posicion);
+            origenCopia.distancia = 0.0;
+            origenCopia.distanciaLocal = getDistancia(ruta.get(ruta.size()-1).posicion,origen.posicion);
+            ruta.add(origenCopia);
+        }
+        long end = System.nanoTime();
+        for (int i = 0; i < rutas.size(); i++) {
+            ArrayList<Tienda> ruta = rutas.get(i);
+            double total = 0;
+            txtRutas.append("Ruta " + i + ": ");
+            for (int j = 0; j < ruta.size(); j++) {
+                Tienda tiendaActual = ruta.get(j);
+                txtRutas.append("\n\ttienda(indice):" + tiendaActual.nombre +
+                            ",\tdistancia con el origen: \t" + tiendaActual.distancia + 
+                            ",\tdistancia con el anterior: \t" + tiendaActual.distanciaLocal + ". ");
+                total+=tiendaActual.distanciaLocal;
+            }
+            acumDistancias+=total;
+            distanciasPorRuta.add(total);
+            txtRutas.append("\ndistancia total: "+total+"\n");            
+        }
+//        long end = System.nanoTime();
+        long totalTime = (end-start)/1000;
+        double distanciaPromedio = acumDistancias/rutas.size();
+        txtRutas.append("Tiempo de ejecucion microsegundos: "+totalTime+"\n");
+        txtRutas.append("Promedio de distancias por ruta: "+distanciaPromedio+"\n");
+        double distanciaMenor = getMin(distanciasPorRuta);
+        double distanciaMayor = getMax(distanciasPorRuta);
+        txtRutas.append("Menor distancia de ruta: "+distanciaMenor+"\n");
+        txtRutas.append("Mayor distancia de ruta: "+distanciaMayor+"\n");
+    }
     public double getMin(ArrayList<Double> list){
         Double min = list.get(0);
         for (int i = 0; i < list.size(); i++) {
@@ -523,6 +660,7 @@ public class main extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCalcular;
+    private javax.swing.JButton btnCalcular2;
     private javax.swing.JButton btnLeer;
     private javax.swing.JButton btnMostrarRuta;
     private javax.swing.JButton btnSalida;
